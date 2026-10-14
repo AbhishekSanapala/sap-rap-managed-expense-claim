@@ -1,0 +1,66 @@
+managed implementation in class zbp_r_jt_expclaim unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZR_JT_ExpClaim alias Claim
+persistent table zjt_exp_claim
+draft table zjt_exp_claim_d
+lock master
+total etag LocalLastChangedAt
+authorization master ( global )
+etag master LocalLastChangedAt
+{
+  create;
+  update;
+  delete;
+  association _Item { create; with draft; }
+
+  field ( readonly, numbering : managed ) ClaimUuid;
+  field ( readonly ) ClaimId, TotalAmount, OverallStatus, CreatedBy, CreatedAt, LastChangedBy, LastChangedAt, LocalLastChangedAt;
+  field ( mandatory ) Description, Employee, CurrencyCode;
+
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare {
+    validation validateDate;
+    validation validateAmount;
+    validation validateItems;
+    validation validateDescription;
+  }
+
+  determination setInitialStatus on modify { create; }
+  determination calculateClaimId on modify { create; }
+
+  validation validateDate on save { create; update; }
+  validation validateAmount on save { create; update; }
+  validation validateItems on save { create; update; }
+  validation validateDescription on save { create; update; }
+
+  action ( features : instance ) approve result [1] $self;
+  action ( features : instance ) reject result [1] $self;
+  factory action copyClaim [1];
+}
+
+define behavior for ZR_JT_ExpItem alias Item
+persistent table zjt_exp_item
+draft table zjt_exp_item_d
+lock dependent by _Claim
+authorization dependent by _Claim
+etag master LastChangedAt
+{
+  update;
+  delete;
+  association _Claim { with draft; }
+
+  field ( readonly, numbering : managed ) ItemUuid;
+  field ( readonly ) ParentUuid, LastChangedAt;
+  field ( mandatory ) ExpenseType, ExpenseDate, Amount, CurrencyCode;
+
+  determination recalculateTotalAmount on modify { field Amount, CurrencyCode; }
+
+  side effects {
+    field Amount affects field _Claim.TotalAmount;
+  }
+}

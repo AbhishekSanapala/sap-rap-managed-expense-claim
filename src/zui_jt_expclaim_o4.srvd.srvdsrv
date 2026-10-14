@@ -1,0 +1,7 @@
+@EndUserText.label: 'Service Definition for Expense Claim App'
+define service ZUI_JT_EXPCLAIM_O4 {
+  expose ZC_JT_ExpClaim      as Claim;
+  expose ZC_JT_ExpItem       as Item;
+  expose ZI_JT_ClaimStatusVH as ClaimStatusVH;
+  expose ZI_JT_ExpenseTypeVH as ExpenseTypeVH;
+}

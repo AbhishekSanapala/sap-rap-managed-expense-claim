@@ -1,0 +1,66 @@
+@Metadata.layer: #CORE
+@UI: {
+  headerInfo: {
+    typeName: 'Expense Claim',
+    typeNamePlural: 'Expense Claims',
+    title: { type: #STANDARD, value: 'ClaimId' },
+    description: { value: 'Description' }
+  }
+}
+annotate view ZC_JT_ExpClaim with
+{
+  @UI.facet: [
+    { id: 'ClaimHeader', type: #COLLECTION, label: 'Claim Details', position: 10 },
+    { id: 'GeneralData', type: #FIELDGROUP_REFERENCE, parentId: 'ClaimHeader', label: 'General Info', position: 10, targetQualifier: 'General' },
+    { id: 'AdminData', type: #FIELDGROUP_REFERENCE, parentId: 'ClaimHeader', label: 'Administrative Info', position: 20, targetQualifier: 'Admin' },
+    { id: 'Items', type: #LINEITEM_REFERENCE, label: 'Line Items', position: 20, targetElement: '_Item' }
+  ]
+
+  @UI.hidden: true
+  ClaimUuid;
+
+  @EndUserText.label: 'Claim ID'
+  @UI: { lineItem: [{ position: 10, importance: #HIGH }], fieldGroup: [{ qualifier: 'General', position: 10 }] }
+  ClaimId;
+
+  @EndUserText.label: 'Employee'
+  @UI: { lineItem: [{ position: 20, importance: #HIGH }], selectionField: [{ position: 10 }], fieldGroup: [{ qualifier: 'General', position: 20 }] }
+  Employee;
+
+  @EndUserText.label: 'Description'
+  @UI: { lineItem: [{ position: 30, importance: #MEDIUM }], fieldGroup: [{ qualifier: 'General', position: 30 }] }
+  Description;
+
+  @EndUserText.label: 'Total Amount'
+  @UI: { lineItem: [{ position: 40, importance: #HIGH }], fieldGroup: [{ qualifier: 'General', position: 40 }] }
+  TotalAmount;
+
+  @EndUserText.label: 'Overall Status'
+  @UI: {
+    lineItem: [
+      { position: 50, importance: #HIGH, criticality: 'OverallStatus' },
+      { type: #FOR_ACTION, dataAction: 'approve', label: 'Approve' },
+      { type: #FOR_ACTION, dataAction: 'reject', label: 'Reject' },
+      { type: #FOR_ACTION, dataAction: 'copyClaim', label: 'Copy Claim' }
+    ],
+    selectionField: [{ position: 20 }],
+    fieldGroup: [{ qualifier: 'General', position: 50 }]
+  }
+  OverallStatus;
+
+  @EndUserText.label: 'Created By'
+  @UI.fieldGroup: [{ qualifier: 'Admin', position: 10 }]
+  CreatedBy;
+
+  @EndUserText.label: 'Created At'
+  @UI.fieldGroup: [{ qualifier: 'Admin', position: 20 }]
+  CreatedAt;
+
+  @EndUserText.label: 'Last Changed By'
+  @UI.fieldGroup: [{ qualifier: 'Admin', position: 30 }]
+  LastChangedBy;
+
+  @EndUserText.label: 'Last Changed At'
+  @UI.fieldGroup: [{ qualifier: 'Admin', position: 40 }]
+  LastChangedAt;
+}
